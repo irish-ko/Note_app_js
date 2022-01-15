@@ -14,12 +14,12 @@ class NoteCore {
 
     initiateNote() {
         this.fieldNote = document.querySelector('div.user-note');
-        this.createBtn = document.querySelector('div.create-note > button#create');
+        this.btnCreate = document.querySelector('div.create-note > button#create');
         this.createForm = document.querySelector('div#create-note');
         this.createFormBtn = document.querySelector('div#button-form');
 
-        this.createFormBtn.addEventListener('click', (eve) => this.formButton(eve, this.createForm));
-        this.createBtn.addEventListener('click', () => this.showCreateForm(true));
+        this.createFormBtn.addEventListener('click', (eve) => this.formButton(eve, this.createForm, this.btnCreate));
+        this.btnCreate.addEventListener('click', () => this.showCreateForm(true));
 
 
     }
@@ -50,7 +50,41 @@ class NoteCore {
                             <a><img name="delete" src="img/bin.png" alt="Delete" width="32" height="32"></a>
                         </li>
                     </ul>`;
-        div.firstChild.addEventListener('click', (event) => this.handlerToDo(event, value.id));
+        div.addEventListener('click', (event) => this.handlerToDo(event, value.id));
+        return div;
+    }
+
+    htmlEditNote(id){
+
+        const value = this.data.note.find(ind => ind.id === id);
+
+        const div = document.createElement('div');
+
+        div.innerHTML = `<div class="create-form" >
+                            <label>
+                                Name note:
+                                <input name="name" type="text" value="${value.name}">
+                            </label>
+                            <label>
+                                Select category:
+                                <select name="category">
+                                    <option value="${value.category}" hidden>${value.category}</option>
+                                    <option value="Task">Task</option>
+                                    <option value="Random Thought">Random Thought</option>
+                                    <option value="Idea">Idea</option>
+                                </select>
+                            </label>
+                            <label>
+                                Content note:
+                                <textarea name="content" id="Content" cols="30" rows="2">${value.content}</textarea>
+                                <!--<input type="text">-->
+                            </label>
+                        </div>
+                        <div class="btn">
+                            <button name="save">Save</button>
+                            <button name="cancel">Cancel</button>
+                        </div>`;
+
         return div;
     }
 
@@ -62,7 +96,7 @@ class NoteCore {
         // console.log(event.target);
 
         if (event.target.name === 'edit')
-            this.editNote(event);
+            this.showEditNote(event, id);
         else if (event.target.name === 'archive')
             this.archiveNote(event, id);
         else if (event.target.name === 'delete')
@@ -71,7 +105,18 @@ class NoteCore {
 
     }
 
-    editNote(e) {
+    showEditNote(e, id) {
+        const edithtml = this.htmlEditNote(id);
+        const oldNote = e.currentTarget;
+
+        edithtml.hidden = true;
+
+        oldNote.before(edithtml);
+
+
+        edithtml.addEventListener('click', (event) => this.formButton(event, edithtml, oldNote, id));
+        this.showCreateForm(true, edithtml, oldNote);
+
 
     }
 
@@ -90,18 +135,21 @@ class NoteCore {
         // console.dir(this.data.note);
     }
 
-    formButton(event, div){
+    formButton(event, div, btnCreate, id = -1){
         event = event || window.event;
-        console.dir(event.currentTarget);
+
+        // console.dir(event.target);
+        // console.dir(div);
+        // console.dir(btnCreate);
 
         if (!(event && event.target.tagName === 'BUTTON')) return;
 
         if (event.target.name === 'cancel')
-            this.showCreateForm(false);
+            this.showCreateForm(false, div, btnCreate);
         else if (event.target.name === 'save') {
 
-            this.createNewNote(div);
-            this.showCreateForm(false);
+            id === -1 ? this.createNewNote(div): this.editNote(div, btnCreate, id);
+            this.showCreateForm(false, div, btnCreate);
 
         }
 
@@ -121,45 +169,33 @@ class NoteCore {
             isArchive: false,
         };
 
-        // div.querySelector("input[name=name]").value = '';
-        // div.querySelector("textarea[name=content]").value = '';
-
         this.fieldNote.append(this.noteHTML(note));
         this.data.note.push(note);
+
         // console.log(note);
         console.log(this.data.note);
 
     }
 
-    showCreateForm(isShow){
-        // console.log(this);
-        this.createForm.hidden = !isShow;
-        this.createBtn.hidden = isShow;
-        // const div = document.createElement('div');
-        // div.innerHTML = `<div class="create-form" >
-        //                     <label>
-        //                         Name note:
-        //                         <input type="text">
-        //                     </label>
-        //                     <label>
-        //                         Select category:
-        //                         <select name="">
-        //                             <option value="1">Task</option>
-        //                             <option value="2">Random Thought</option>
-        //                             <option value="3">Idea</option>
-        //                         </select>
-        //                     </label>
-        //                     <label>
-        //                         Content note:
-        //                         <textarea name="Content" id="Content" cols="30" rows="2"></textarea>
-        //                         <!--<input type="text">-->
-        //                     </label>
-        //                 </div>
-        //                 <div class="btn bottom-note">
-        //                     <button>Save</button>
-        //                     <button>Cancel</button>
-        //                 </div>`;
-        // this.createBtn.before(div)
+    editNote(div, oldnote, id) {
+        const editnote = this.data.note.find((item) => item.id === id);
+
+        editnote.name = div.querySelector("input[name=name]").value;
+        editnote.category = div.querySelector("select[name=category]").value;
+        editnote.content = div.querySelector("textarea[name=content]").value;
+
+        oldnote.innerHTML = this.noteHTML(editnote).innerHTML;
+
+        console.log(this.data.note);
+    }
+
+    showCreateForm(isShow, createForm = this.createForm, btnCreate = this.btnCreate){
+
+        // console.log(createForm);
+        // console.log(btnCreate);
+
+        createForm.hidden = !isShow;
+        btnCreate.hidden = isShow;
     }
 
 
