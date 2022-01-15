@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="style.css" rel="stylesheet">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <div class="content">
+            <div class="note">
+                <div class="header">
+                    <ul class="head">
+                        <li>Name</li>
+                        <li>Created</li>
+                        <li>Category</li>
+                        <li>Content</li>
+                        <li>Dates</li>
+                        <li>ToDo</li>
+                    </ul>
+                </div>
+                <div class="user-note">
+                    <ul class="node-tamp">
+                        <li>Shoping list</li>
+                        <li>Apri 20, 2021</li>
+                        <li>Task</li>
+                        <li>Tomate, bread</li>
+                        <li>Dates</li>
+                        <li>
+                            <img src="img/edit.png" alt="Edit" width="32" height="32">
+                            <img src="img/archive.png" alt="Archive" width="32" height="32">
+                            <img src="img/bin.png" alt="Delete" width="32" height="32">
+                        </li>
+                    </ul>
+                </div>
+                <div class="create-note">
+                    <div class="create" id="create-note" hidden>
+                        <div class="create-form" id="create-form">
+                            <label>
+                                Name note:
+                                <input name="name" type="text">
+                            </label>
+                            <label>
+                                Select category:
+                                <select name="category">
+                                    <option value="Task">Task</option>
+                                    <option value="Random Thought">Random Thought</option>
+                                    <option value="Idea">Idea</option>
+                                </select>
+                            </label>
+                            <label>
+                                Content note:
+                                <textarea name="content" id="Content" cols="30" rows="2"></textarea>
+                                <!--<input type="text">-->
+                            </label>
+                        </div>
+                        <div class="btn bottom-note" id="button-form">
+                            <button name="save">Save</button>
+                            <button name="cancel">Cancel</button>
+                        </div>
+                    </div>
+                    <button type="button" id="create" class="cr-btn">Create Note</button>
+                </div>
+            </div>
+            <div class="archive">
+                <div class="header">
+                    <ul class="head">
+                        <li>Note Category</li>
+                        <li>Active</li>
+                        <li>Archive</li>
+                    </ul>
+                </div>
+                <div class="arch-note">
+                    <ul class="node-tamp">
+                        <li>Task</li>
+                        <li>13</li>
+                        <li>4</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
