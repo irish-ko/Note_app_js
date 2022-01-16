@@ -1,7 +1,6 @@
 
 import {noteData} from './storage.js';
 
-console.log(noteData);
 
 class NoteCore {
     constructor(noteData = {lastId:0, note:[], categor: [
@@ -27,15 +26,14 @@ class NoteCore {
 
         this.initiateNote();
 
-        // console.log(this.createBtn);
     }
 
     initiateNote() {
         this.fieldNote = document.querySelector('div.user-note');
         this.btnCreate = document.querySelector('div.create-note > button#create');
-        this.createForm = document.querySelector('div#create-note');
-        this.createFormBtn = document.querySelector('div#button-form');
-        this.fieldArchive = document.querySelector('div#archive');
+        this.createForm = document.querySelector('div #create-note');
+        this.createFormBtn = document.querySelector('div #button-form');
+        this.fieldArchive = document.querySelector('div #archive');
 
         this.createFormBtn.addEventListener('click', (eve) => this.formButton(eve, this.createForm, this.btnCreate));
         this.btnCreate.addEventListener('click', () => this.showCreateForm(true));
@@ -47,7 +45,6 @@ class NoteCore {
         if (this.data.categor.length === 0) return undefined;
 
         this.fieldArchive.innerHTML = '';
-        // console.log();
 
         this.data.categor.forEach((value) => {
 
@@ -61,7 +58,6 @@ class NoteCore {
         if (this.data.note.length === 0) return undefined;
 
         this.fieldNote.innerHTML = '';
-        // console.log();
 
         this.data.note.filter(value => !value.isArchive).forEach((value) => {
             // const note = this.noteHTML(value);
@@ -77,7 +73,7 @@ class NoteCore {
         divNote.setAttribute('id',value.replace(/\s+/g, ''));
         // divNote.hidden = true;
 
-        div.innerHTML = `<ul class="node-tamp">
+        div.innerHTML = `<ul class="node-tamp" id="${value.replace(/\s+/g, '')}" >
                 <li>${value}</li>
                 <li id="active">${this.data.note.filter(val => val.category === value && !val.isArchive).length}</li>
                 <li id="archive">${this.data.note.filter(val => val.category === value && val.isArchive).length}</li>
@@ -150,24 +146,13 @@ class NoteCore {
     }
 
     showArchNote(e,value){
-        console.log(value);
+
         if (this.data.note.length === 0) return undefined;
 
         let div = e.currentTarget.querySelector('div#'+value.replace(/\s+/g, ''));
         div.innerHTML = '';
 
         this.data.note.filter(val => val.category === value && val.isArchive).forEach(value1 => div.append(this.noteHTML(value1, true)));
-
-        // e.currentTarget.addEventListener('click', () => div.innerHTML = '' );
-        // e.currentTarget.append(div);
-
-        // this.fieldNote.innerHTML = '';
-        // console.log();
-
-        // this.data.note.filter(value => !value.isArchive).forEach((value) => {
-        //     // const note = this.noteHTML(value);
-        //     this.fieldNote.append(this.noteHTML(value));
-        // })
 
     }
 
@@ -176,7 +161,6 @@ class NoteCore {
 
         if (!(event && event.target.tagName === 'IMG')) return;
 
-        // console.log(event.target);
 
         if (event.target.name === 'edit')
             this.showEditNote(event, id);
@@ -207,17 +191,29 @@ class NoteCore {
 
     }
 
-    plusArchive(){
+    plusArchive(ul){
+        let li = ul.querySelector('li#active');
 
+        li.innerHTML = +li.innerHTML + 1;
     }
 
-    minusArchive(){
+    minusArchive(ul){
+        let li = ul.querySelector('li#archive');
 
+        li.innerHTML = +li.innerHTML - 1;
     }
 
     unArchiveNote(e, id){
-        this.data.note.find((item) => item.id === id).isArchive = false;
+        let note = this.data.note.find((item) => item.id === id);
+        let ul = this.fieldArchive.querySelector('ul#' + note.category.replace(/\s+/g, ''));
+
+        note.isArchive = false;
         e.currentTarget.remove();
+
+
+
+        this.plusArchive(ul);
+        this.minusArchive(ul);
         this.showNote();
     }
 
@@ -267,8 +263,6 @@ class NoteCore {
         this.fieldNote.append(this.noteHTML(note));
         this.data.note.push(note);
 
-        // console.log(note);
-        console.log(this.data.note);
 
     }
 
@@ -282,7 +276,6 @@ class NoteCore {
 
         oldnote.innerHTML = this.noteHTML(editnote).innerHTML;
 
-        console.log(this.data.note);
     }
 
     saveNoteDate() {
@@ -319,9 +312,3 @@ const myClass = new NoteCore(noteData);
 
 myClass.showNote();
 myClass.showCategorArchive();
-
-
-// myClass.parseContent('I’m gonna have a dentist appointment on the 3/5/2021, I moved it from' +
-//     ' 5/5/2021 sdfdfsdfsdfsdfs5/53f/2021');
-
-// console.log(document.querySelector('div.user-note'));
