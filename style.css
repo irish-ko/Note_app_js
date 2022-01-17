@@ -126,3 +126,11 @@ ul.node-tamp {
 .edit-button > a {
     cursor: pointer;
 }
+
+.edit-button >a> img:hover {
+    background-color: lightblue;
+}
+
+.arch-hover:hover {
+    background-color: peachpuff;
+}
