@@ -73,7 +73,7 @@ class NoteCore {
         divNote.setAttribute('id',value.replace(/\s+/g, ''));
         // divNote.hidden = true;
 
-        div.innerHTML = `<ul class="node-tamp" id="${value.replace(/\s+/g, '')}" >
+        div.innerHTML = `<ul class="node-tamp arch-hover" id="${value.replace(/\s+/g, '')}" >
                 <li>${value}</li>
                 <li id="active">${this.data.note.filter(val => val.category === value && !val.isArchive).length}</li>
                 <li id="archive">${this.data.note.filter(val => val.category === value && val.isArchive).length}</li>
@@ -191,16 +191,16 @@ class NoteCore {
 
     }
 
-    plusArchive(ul){
+    changeActiveStat(ul, change = 1){
         let li = ul.querySelector('li#active');
 
-        li.innerHTML = +li.innerHTML + 1;
+        li.innerHTML = +li.innerHTML + +change;
     }
 
-    minusArchive(ul){
+    changeArchiveStat(ul, change = -1){
         let li = ul.querySelector('li#archive');
 
-        li.innerHTML = +li.innerHTML - 1;
+        li.innerHTML = +li.innerHTML + +change;
     }
 
     unArchiveNote(e, id){
@@ -210,24 +210,30 @@ class NoteCore {
         note.isArchive = false;
         e.currentTarget.remove();
 
-
-
-        this.plusArchive(ul);
-        this.minusArchive(ul);
+        this.changeActiveStat(ul, 1);
+        this.changeArchiveStat(ul, -1);
         this.showNote();
     }
 
     archiveNote(e, id) {
-        this.data.note.find((item) => item.id === id).isArchive = true;
+        let note = this.data.note.find((item) => item.id === id);
+
+        note.isArchive = true;
         e.currentTarget.remove();
+
         this.showCategorArchive();
     }
 
     deleteNote(e, id) {
         let nmb = this.data.note.findIndex((item) => item.id === id);
 
-        nmb !== -1 && this.data.note.splice(nmb, 1);
+        if (nmb === -1) retrun;
+
+        let ul = this.fieldArchive.querySelector('ul#' + this.data.note[nmb].category.replace(/\s+/g, ''));
+
+        this.data.note.splice(nmb, 1);
         e.currentTarget.remove();
+        this.changeActiveStat(ul, -1);
     }
 
     formButton(event, div, btnCreate, id = -1){
@@ -259,15 +265,17 @@ class NoteCore {
             contentDate: this.parseContent(div.querySelector("textarea[name=content]").value),
             isArchive: false,
         };
+        let ul = this.fieldArchive.querySelector('ul#' + note.category.replace(/\s+/g, ''));
 
         this.fieldNote.append(this.noteHTML(note));
         this.data.note.push(note);
-
+        this.changeActiveStat(ul, 1);
 
     }
 
     editNote(div, oldnote, id) {
         const editnote = this.data.note.find((item) => item.id === id);
+        let oldCategory = editnote.category;
 
         editnote.name = div.querySelector("input[name=name]").value;
         editnote.category = div.querySelector("select[name=category]").value;
@@ -275,6 +283,14 @@ class NoteCore {
         editnote.contentDate = this.parseContent(div.querySelector("textarea[name=content]").value);
 
         oldnote.innerHTML = this.noteHTML(editnote).innerHTML;
+
+        if (oldCategory !== editnote.category) {
+            let oldUl = this.fieldArchive.querySelector('ul#' + oldCategory.replace(/\s+/g, ''));
+            let ul = this.fieldArchive.querySelector('ul#' + editnote.category.replace(/\s+/g, ''));
+
+            this.changeActiveStat(oldUl, -1);
+            this.changeActiveStat(ul, 1);
+        }
 
     }
 
